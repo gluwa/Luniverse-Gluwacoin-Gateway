@@ -7,11 +7,14 @@ import "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import "../LuniverseGluwacoinGateway.sol";
 
 contract LuniverseGluwacoinGatewayMock is Initializable, LuniverseGluwacoinGateway {
+    using Address for address;
 
     constructor(
-        IERC20 token
+        IERC20 token,
+        address gluwa,
+        address luniverse
     ) public {
-        initialize(token);
+        initialize(token, gluwa, luniverse);
     }
 
     uint256[50] private __gap;

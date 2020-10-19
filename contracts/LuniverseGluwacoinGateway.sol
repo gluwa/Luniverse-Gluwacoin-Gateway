@@ -24,7 +24,9 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     IERC20 private _token;
 
     bytes32 public constant GLUWA_ROLE = keccak256("GLUWA_ROLE");
+    bytes32 public constant GLUWA_ADMIN_ROLE = keccak256("GLUWA_ADMIN_ROLE");
     bytes32 public constant LUNIVERSE_ROLE = keccak256("LUNIVERSE_ROLE");
+    bytes32 public constant LUNIVERSE_ADMIN_ROLE = keccak256("LUNIVERSE_ADMIN_ROLE");
 
     // unpeg request object
     struct Unpeg {
@@ -38,10 +40,14 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     // transactionHash mapping to Unpeg.
     mapping (bytes32 => Unpeg) private _unpegged;
 
-    function initialize(IERC20 token) public {
+    function initialize(IERC20 token, address gluwa, address luniverse) public {
         _token = token;
-        _setupRole(GLUWA_ROLE, _msgSender());
-        _setupRole(LUNIVERSE_ROLE, _msgSender());
+        _setupRole(GLUWA_ROLE, gluwa);
+        _setupRole(GLUWA_ADMIN_ROLE, gluwa);
+        _setRoleAdmin(GLUWA_ROLE, GLUWA_ADMIN_ROLE);
+        _setupRole(LUNIVERSE_ROLE, luniverse);
+        _setupRole(LUNIVERSE_ADMIN_ROLE, luniverse);
+        _setRoleAdmin(LUNIVERSE_ROLE, LUNIVERSE_ADMIN_ROLE);
     }
 
     /**
