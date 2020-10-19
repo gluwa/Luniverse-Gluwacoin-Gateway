@@ -1,0 +1,37 @@
+{
+  "name": "luniverse-gluwacoin-gateway",
+  "version": "1.0.0",
+  "description": "Gluwacoin Gateway for the Luniverse",
+  "main": "index.js",
+  "dependencies": {
+    "@openzeppelin/cli": "^2.8.2",
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-environment": "^0.1.5",
+    "@openzeppelin/test-helpers": "^0.5.7",
+    "chai": "^4.2.0",
+    "mocha": "^8.2.0"
+  },
+  "scripts": {
+    "test": "oz compile && mocha --exit --recursive test --timeout 5000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gluwa/Luniverse-Gluwacoin-Gateway.git"
+  },
+  "keywords": [
+    "Gluwa",
+    "Gluwacoin",
+    "ERC20",
+    "Ethereum",
+    "Luniverse",
+    "Sidechain"
+  ],
+  "author": "Gluwa, Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gluwa/Luniverse-Gluwacoin-Gateway/issues"
+  },
+  "homepage": "https://github.com/gluwa/Luniverse-Gluwacoin-Gateway#readme"
+}
