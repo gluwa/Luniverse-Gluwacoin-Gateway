@@ -7,8 +7,6 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
-import "./abstracts/ERC20Reservable.sol";
-
 /**
  * @dev 2-Way Peg Gluwacoin Gateway contract between the Ethereum network and the Luniverse.
  * Gluwa and Luniverse serves as gatekeepers of the gateway.
@@ -19,7 +17,7 @@ import "./abstracts/ERC20Reservable.sol";
  * Burn your Luniverse Gluwacoin and request gatekeepers to verify your burn by submitting its transactionHash.
  * Once both gatekeepers verifies the burn, your Gluwacoin will get released from the contract to your address.
  */
-contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe  {
+contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessControlUpgradeSafe  {
     using Address for address;
 
     // base token, the token to be pegged
@@ -41,7 +39,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe  {
     mapping (bytes32 => Unpeg) private _unpegged;
 
     function initialize(IERC20 token) public {
-        _token = token_;
+        _token = token;
         _setupRole(GLUWA_ROLE, _msgSender());
         _setupRole(LUNIVERSE_ROLE, _msgSender());
     }
@@ -95,17 +93,17 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe  {
     function gluwaApprove(bytes32 txnHash) public {
         require(hasRole(GLUWA_ROLE, msg.sender),
             "Unpeggable: caller does not have the Gluwa role");
-        require(!_pegged[txnHash]._gluwaApproved, "Peggable: the txnHash is already Gluwa Approved");
+        require(!_unpegged[txnHash]._gluwaApproved, "Peggable: the txnHash is already Gluwa Approved");
 
-        _pegged[txnHash]._gluwaApproved = true;
+        _unpegged[txnHash]._gluwaApproved = true;
     }
 
     function luniverseApprove(bytes32 txnHash) public {
         require(hasRole(GLUWA_ROLE, msg.sender),
             "Unpeggable: caller does not have the Luniverse role");
-        require(!_pegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
+        require(!_unpegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
 
-        _pegged[txnHash]._luniverseApproved = true;
+        _unpegged[txnHash]._luniverseApproved = true;
     }
 
     /**
@@ -125,8 +123,8 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe  {
 
         _unpegged[txnHash]._processed = true;
 
-        address account = _pegged[txnHash]._sender;
-        uint256 amount = _pegged[txnHash]._amount;
+        address account = _unpegged[txnHash]._sender;
+        uint256 amount = _unpegged[txnHash]._amount;
 
         _token.transfer(account, amount);
     }
