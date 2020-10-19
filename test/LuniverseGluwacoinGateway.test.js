@@ -108,4 +108,157 @@ describe('LuniverseGluwacoinGateway', function () {
     it('LUNIVERSE_ADMIN_ROLE can renounce LUNIVERSE_ADMIN_ROLE', async function () {
         expect(await this.token.renounceRole(LUNIVERSE_ADMIN_ROLE, luniverse, { from: luniverse }));
     });
+
+    /* Unpeggable related
+    */
+    // unpeg related
+    it('Gluwa can unpeg', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        expect(await this.token.isUnpegged(unpegTxnHash)).to.be.equal(true);
+    });
+
+    it('newly-created Gluwa can unpeg', async function () {
+        await this.token.grantRole(GLUWA_ROLE, other, { from: gluwa });
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : other });
+        expect(await this.token.isUnpegged(unpegTxnHash)).to.be.equal(true);
+    });
+
+    it('Luniverse can unpeg', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : luniverse });
+        expect(await this.token.isUnpegged(unpegTxnHash)).to.be.equal(true);
+    });
+
+    it('newly-created Luniverse can unpeg', async function () {
+        await this.token.grantRole(LUNIVERSE_ROLE, other, { from: luniverse });
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : other });
+        expect(await this.token.isUnpegged(unpegTxnHash)).to.be.equal(true);
+    });
+
+    it('non-Gluwa and non-Luniverse cannot unpeg', async function () {
+        await expectRevert(
+            this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : another }),
+            'Unpeggable: caller does not have the Gluwa role or the Luniverse role'
+        );
+    });
+
+    // getUnpeg related
+    it('Gluwa can get an existing unpeg', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        var unpeg = await this.token.getUnpeg(unpegTxnHash, { from : deployer });
+        expect(unpeg.amount).to.be.bignumber.equal(unpegAmount);
+        expect(unpeg.sender).to.be.bignumber.equal(other);
+        expect(!unpeg.gluwaApproved);
+        expect(!unpeg.luniverseApproved);
+        expect(!unpeg.processed);
+    });
+
+    it('other can get an existing unpeg', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        var unpeg = await this.token.getUnpeg(unpegTxnHash, { from : other });
+        expect(unpeg.amount).to.be.bignumber.equal(unpegAmount);
+        expect(unpeg.sender).to.be.bignumber.equal(other);
+        expect(!unpeg.gluwaApproved);
+        expect(!unpeg.luniverseApproved);
+        expect(!unpeg.processed);
+    });
+
+    it('cannot get a non-existing unpeg', async function () {
+        await expectRevert(
+            this.token.getUnpeg(unpegTxnHash, { from : deployer }),
+            'Unpeggable: the txnHash is not unpegged'
+        );
+    });
+
+    // gluwaApprove related
+    it('Gluwa can gluwaApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+    });
+
+    it('newly-created Gluwa can gluwaApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        await this.token.grantRole(GLUWA_ROLE, other, { from: gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : other });
+    });
+
+    it('non-Gluwa cannot gluwaApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        await expectRevert(
+            this.token.gluwaApprove(unpegTxnHash, { from : other }),
+            'Unpeggable: caller does not have the Gluwa role'
+        );
+    });
+
+    it('Luniverse cannot gluwaApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        await expectRevert(
+            this.token.gluwaApprove(unpegTxnHash, { from : luniverse }),
+            'Unpeggable: caller does not have the Gluwa role'
+        );
+    });
+
+    // luniverseApprove related
+    it('Luniverse can luniverseApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : luniverse });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+    });
+
+    it('newly-created Luniverse can luniverseApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        await this.token.grantRole(LUNIVERSE_ROLE, other, { from: luniverse });
+        await this.token.luniverseApprove(unpegTxnHash, { from : other });
+    });
+
+    it('non-Luniverse cannot luniverseApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        await expectRevert(
+            this.token.luniverseApprove(unpegTxnHash, { from : other }),
+            'Unpeggable: caller does not have the Luniverse role'
+        );
+    });
+
+    it('Gluwa cannot luniverseApprove', async function () {
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+
+        await expectRevert(
+            this.token.luniverseApprove(unpegTxnHash, { from : gluwa }),
+            'Unpeggable: caller does not have the Luniverse role'
+        );
+    });
+
+    // processUnpeg related
+    it('Gluwa can processUnpeg', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        await this.token.processUnpeg(unpegTxnHash, { from : gluwa });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount);
+    });
+
+    it('Luniverse can processUnpeg', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        await this.token.processUnpeg(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount);
+    });
 });
