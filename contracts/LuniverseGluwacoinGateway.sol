@@ -105,7 +105,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
 
     function luniverseApprove(bytes32 txnHash) public {
-        require(hasRole(GLUWA_ROLE, msg.sender),
+        require(hasRole(LUNIVERSE_ROLE, msg.sender),
             "Unpeggable: caller does not have the Luniverse role");
         require(!_unpegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
 
