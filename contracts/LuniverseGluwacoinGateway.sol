@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
+import "./Validate.sol";
+
 /**
  * @dev 2-Way Peg Gluwacoin Gateway contract between the Ethereum network and the Luniverse.
  * Gluwa and Luniverse serves as gatekeepers of the gateway.
@@ -153,7 +155,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
 
         Validate.validateSignature(address(this), sender, txnHash, fee, sig);
 
-        _token.transfer(account, amount.sub(fee));
+        _token.transfer(account, SafeMath.sub(amount, fee));
         _token.transfer(msg.sender, fee);
 
         _unpegged[txnHash]._processed = true;
