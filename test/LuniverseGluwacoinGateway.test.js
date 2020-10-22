@@ -10,6 +10,8 @@ const { ZERO_ADDRESS, MAX_UINT256 } = constants;
 const ERC20PresetMinterPauser = contract.fromArtifact('ERC20PresetMinterPauserMockUpgradeSafe');
 const LuniverseGluwacoinGateway = contract.fromArtifact('LuniverseGluwacoinGatewayMock');
 
+var sign = require('./signature');
+
 // Start test block
 describe('LuniverseGluwacoinGateway', function () {
     const [ deployer, other, another, gluwa, luniverse ] = accounts;
@@ -243,7 +245,7 @@ describe('LuniverseGluwacoinGateway', function () {
 
         expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
 
-        await this.token.processUnpeg(unpegTxnHash, { from : gluwa });
+        await this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : gluwa });
 
         expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount);
     });
@@ -257,8 +259,175 @@ describe('LuniverseGluwacoinGateway', function () {
 
         expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
 
-        await this.token.processUnpeg(unpegTxnHash, { from : luniverse });
+        await this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : luniverse });
 
         expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount);
+    });
+
+    it('non-Gluwa/non-Luniverse can processUnpeg', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        await this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : other });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount);
+    });
+
+    it('non-Gluwa/non-Luniverse cannot processUnpeg when not Gluwa approved', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        await expectRevert(
+            this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : other }),
+            'Unpeggable: the txnHash is not Gluwa Approved'
+        );
+    });
+
+    it('non-Gluwa/non-Luniverse cannot processUnpeg when not Luniverse approved', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        await expectRevert(
+            this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : other }),
+            'Unpeggable: the txnHash is not Luniverse Approved'
+        );
+    });
+
+    it('non-Gluwa/non-Luniverse cannot processUnpeg when already processed', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        await this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : other });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount);
+
+        await expectRevert(
+            this.token.methods['processUnpeg(bytes32)'](unpegTxnHash, { from : other }),
+            'Unpeggable: the txnHash is already processed'
+        );
+    });
+
+    // ETHless processUnpeg related
+    it('Gluwa can processUnpeg', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        var signature = sign.sign(this.token.address, other, other_privateKey, unpegTxnHash, fee);
+
+        await this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : gluwa });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount.sub(fee));
+        expect(await this.baseToken.balanceOf(gluwa)).to.be.bignumber.equal(fee);
+    });
+
+    it('Luniverse cannot processUnpeg', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        var signature = sign.sign(this.token.address, other, other_privateKey, unpegTxnHash, fee);
+
+        await expectRevert(
+            this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : luniverse }),
+            'Unpeggable: caller does not have the Gluwa role'
+        );
+    });
+
+    it('non-Gluwa cannot processUnpeg', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        var signature = sign.sign(this.token.address, other, other_privateKey, unpegTxnHash, fee);
+
+        await expectRevert(
+            this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : other }),
+            'Unpeggable: caller does not have the Gluwa role'
+        );
+    });
+
+    it('Gluwa cannot processUnpeg when not Gluwa approved', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        var signature = sign.sign(this.token.address, other, other_privateKey, unpegTxnHash, fee);
+
+        await expectRevert(
+            this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : gluwa }),
+            'Unpeggable: the txnHash is not Gluwa Approved'
+        );
+    });
+
+    it('Gluwa cannot processUnpeg when not Luniverse approved', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        var signature = sign.sign(this.token.address, other, other_privateKey, unpegTxnHash, fee);
+
+        await expectRevert(
+            this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : gluwa }),
+            'Unpeggable: the txnHash is not Luniverse Approved'
+        );
+    });
+
+    it('Gluwa cannot processUnpeg when already processed', async function () {
+        await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
+
+        await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwa });
+        await this.token.gluwaApprove(unpegTxnHash, { from : gluwa });
+        await this.token.luniverseApprove(unpegTxnHash, { from : luniverse });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
+
+        var signature = sign.sign(this.token.address, other, other_privateKey, unpegTxnHash, fee);
+
+        await this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : gluwa });
+
+        expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal(unpegAmount.sub(fee));
+        expect(await this.baseToken.balanceOf(gluwa)).to.be.bignumber.equal(fee);
+
+        await expectRevert(
+            this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : gluwa }),
+            'Unpeggable: the txnHash is already processed'
+        );
     });
 });

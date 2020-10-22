@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
+import "./Validate.sol";
+
 /**
  * @dev 2-Way Peg Gluwacoin Gateway contract between the Ethereum network and the Luniverse.
  * Gluwa and Luniverse serves as gatekeepers of the gateway.
@@ -118,21 +120,45 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * Requirements:
      *
      * - the Unpeg must be Gluwa Approved and Luniverse Approved.
-     * - the caller must have the Gluwa role or the Luniverse role.
+     * - the Unpeg must be not processed yet.
      */
     function processUnpeg(bytes32 txnHash) public {
-        require(hasRole(GLUWA_ROLE, msg.sender) || hasRole(LUNIVERSE_ROLE, msg.sender),
-            "Unpeggable: caller does not have the Gluwa role or the Luniverse role");
         require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
         require(_unpegged[txnHash]._luniverseApproved, "Unpeggable: the txnHash is not Luniverse Approved");
         require(!_unpegged[txnHash]._processed, "Unpeggable: the txnHash is already processed");
-
-        _unpegged[txnHash]._processed = true;
 
         address account = _unpegged[txnHash]._sender;
         uint256 amount = _unpegged[txnHash]._amount;
 
         _token.transfer(account, amount);
+
+        _unpegged[txnHash]._processed = true;
+    }
+
+    /**
+     * @dev Process Unpeg request ETHlessly and release the unpegged Gluwacoin to the requestor.
+     *
+     * Requirements:
+     *
+     * - the Unpeg must be Gluwa Approved and Luniverse Approved.
+     * - the Unpeg must be not processed yet.
+     * - the caller must have the Gluwa role.
+     */
+    function processUnpeg(bytes32 txnHash, address sender, uint256 fee, bytes memory sig) public {
+        require(hasRole(GLUWA_ROLE, msg.sender), "Unpeggable: caller does not have the Gluwa role");
+        require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
+        require(_unpegged[txnHash]._luniverseApproved, "Unpeggable: the txnHash is not Luniverse Approved");
+        require(!_unpegged[txnHash]._processed, "Unpeggable: the txnHash is already processed");
+
+        address account = _unpegged[txnHash]._sender;
+        uint256 amount = _unpegged[txnHash]._amount;
+
+        Validate.validateSignature(address(this), sender, txnHash, fee, sig);
+
+        _token.transfer(account, SafeMath.sub(amount, fee));
+        _token.transfer(msg.sender, fee);
+
+        _unpegged[txnHash]._processed = true;
     }
 
     uint256[50] private __gap;
