@@ -122,7 +122,7 @@ describe('LuniverseGluwacoinGateway_TokenAndRole', function () {
 
 describe('LuniverseGluwacoinGateway_Unpeggable', function () {
     const [ deployer, other, another, gluwaAdmin, luniverseAdmin ] = accounts;
-    const [ deployer_privateKey, other_privateKey, another_privateKey ] = privateKeys;
+    const [ deployer_privateKey, other_privateKey, another_privateKey, gluwaAdmin_privateKey, luniverseAdmin_privateKey ] = privateKeys;
 
     const amount = new BN('5000');
     const fee = new BN('1');
@@ -246,7 +246,42 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
                 'Unpeggable: caller does not have the Gluwa role'
             );
         });
-    });  
+    });
+
+    // ETHless gluwaApprove related
+    describe('gluwaApprove ETHless test', async function () {
+        it('non-Gluwa can ETHless gluwaApprove', async function () {
+            await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
+
+            var sig = sign.signApprove(this.token.address, gluwaAdmin, gluwaAdmin_privateKey, unpegTxnHash);
+            await this.token.gluwaApprove(unpegTxnHash, gluwaAdmin, sig, { from : another });
+
+            var unpeg = await this.token.getUnpeg(unpegTxnHash, { from : other });
+            expect(unpeg.gluwaApproved);
+        });
+
+        it('cannot ETHless gluwaApprove with a signature of a non-Gluwa', async function () {
+            await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
+
+            var sig = sign.signApprove(this.token.address, another, another_privateKey, unpegTxnHash);
+
+            await expectRevert(
+                this.token.gluwaApprove(unpegTxnHash, another, sig, { from : other }),
+                'Unpeggable: approver does not have the Gluwa role'
+            );
+        });
+
+        it('Gluwa cannot ETHless gluwaApprove with a signature of a non-Gluwa', async function () {
+            await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
+
+            var sig = sign.signApprove(this.token.address, another, another_privateKey, unpegTxnHash);
+
+            await expectRevert(
+                this.token.gluwaApprove(unpegTxnHash, another, sig, { from : gluwaAdmin }),
+                'Unpeggable: approver does not have the Gluwa role'
+            );
+        });
+    });
 
     // luniverseApprove related
     describe('luniverseApprove test', async function () {
@@ -284,6 +319,41 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await expectRevert(
                 this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin }),
                 'Unpeggable: caller does not have the Luniverse role'
+            );
+        });
+    });
+
+    // ETHless luniverseApprove related
+    describe('luniverseApprove ETHless test', async function () {
+        it('non-Luniverse can ETHless luniverseApprove', async function () {
+            await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
+
+            var sig = sign.signApprove(this.token.address, luniverseAdmin, luniverseAdmin_privateKey, unpegTxnHash);
+            await this.token.methods['luniverseApprove(bytes32,address,bytes)'](unpegTxnHash,luniverseAdmin,sig, { from : another });
+
+            var unpeg = await this.token.getUnpeg(unpegTxnHash, { from : other });
+            expect(unpeg.luniverseApproved);
+        });
+
+        it('cannot ETHless luniverseApprove with a signature of a non-Luniverse', async function () {
+            await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
+
+            var sig = sign.signApprove(this.token.address, another, another_privateKey, unpegTxnHash);
+
+            await expectRevert(
+                this.token.methods['luniverseApprove(bytes32,address,bytes)'](unpegTxnHash,another,sig, { from : another }),
+                'Unpeggable: approver does not have the Luniverse role'
+            );
+        });
+
+        it('Luniverse cannot ETHless luniverseApprove with a signature of a non-Gluwa', async function () {
+            await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
+
+            var sig = sign.signApprove(this.token.address, another, another_privateKey, unpegTxnHash);
+
+            await expectRevert(
+                this.token.methods['luniverseApprove(bytes32,address,bytes)'](unpegTxnHash,another,sig, { from : luniverseAdmin }),
+                'Unpeggable: approver does not have the Luniverse role'
             );
         });
     });
