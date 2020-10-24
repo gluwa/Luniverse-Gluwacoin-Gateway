@@ -210,6 +210,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
 
     // gluwaApprove related
     describe('gluwaApprove test', async function () {
+        // role related
         it('GluwaAdmin can gluwaApprove', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
             await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
@@ -246,6 +247,13 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
                 'Unpeggable: caller does not have the Gluwa role'
             );
         });
+
+        it('Gluwa cannot gluwaApprove non-existing unpeg', async function () {
+            await expectRevert(
+                this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin }),
+                'Unpeggable: the txnHash is not unpegged'
+            );
+        });
     });
 
     // ETHless gluwaApprove related
@@ -279,6 +287,14 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await expectRevert(
                 this.token.gluwaApprove(unpegTxnHash, another, sig, { from : gluwaAdmin }),
                 'Unpeggable: approver does not have the Gluwa role'
+            );
+        });
+
+        it('Gluwa cannot ETHless gluwaApprove non-existing unpeg', async function () {
+            var sig = sign.signApprove(this.token.address, gluwaAdmin, gluwaAdmin_privateKey, unpegTxnHash);
+            await expectRevert(
+                this.token.gluwaApprove(unpegTxnHash, gluwaAdmin, sig, { from : gluwaAdmin }),
+                'Unpeggable: the txnHash is not unpegged'
             );
         });
     });
@@ -321,6 +337,13 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
                 'Unpeggable: caller does not have the Luniverse role'
             );
         });
+
+        it('Luniverse cannot luniverseApprove non-existing unpeg', async function () {
+            await expectRevert(
+                this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin }),
+                'Unpeggable: the txnHash is not unpegged'
+            );
+        });
     });
 
     // ETHless luniverseApprove related
@@ -354,6 +377,14 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await expectRevert(
                 this.token.methods['luniverseApprove(bytes32,address,bytes)'](unpegTxnHash,another,sig, { from : luniverseAdmin }),
                 'Unpeggable: approver does not have the Luniverse role'
+            );
+        });
+
+        it('Luniverse cannot ETHless luniverseApprove non-existing unpeg', async function () {
+            var sig = sign.signApprove(this.token.address, luniverseAdmin, luniverseAdmin_privateKey, unpegTxnHash);
+            await expectRevert(
+                this.token.methods['luniverseApprove(bytes32,address,bytes)'](unpegTxnHash,luniverseAdmin,sig, { from : luniverseAdmin }),
+                'Unpeggable: the txnHash is not unpegged'
             );
         });
     });
