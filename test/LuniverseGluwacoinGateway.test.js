@@ -212,14 +212,14 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
     describe('gluwaApprove test', async function () {
         it('GluwaAdmin can gluwaApprove', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
         });
     
         it('newly-created Gluwa can gluwaApprove', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
     
             await this.token.grantRole(GLUWA_ROLE, other, { from: gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : other });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : other });
 
             var unpeg = await this.token.getUnpeg(unpegTxnHash, { from : other });
             expect(unpeg.amount).to.be.bignumber.equal(unpegAmount);
@@ -233,7 +233,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
     
             await expectRevert(
-                this.token.gluwaApprove(unpegTxnHash, { from : other }),
+                this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : other }),
                 'Unpeggable: caller does not have the Gluwa role'
             );
         });
@@ -242,7 +242,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
     
             await expectRevert(
-                this.token.gluwaApprove(unpegTxnHash, { from : luniverseAdmin }),
+                this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin }),
                 'Unpeggable: caller does not have the Gluwa role'
             );
         });
@@ -252,7 +252,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
     describe('luniverseApprove test', async function () {
         it('LuniverseAdmin can luniverseApprove', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : luniverseAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
 
             var unpeg = await this.token.getUnpeg(unpegTxnHash, { from : other });
             expect(unpeg.amount).to.be.bignumber.equal(unpegAmount);
@@ -266,14 +266,14 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
     
             await this.token.grantRole(LUNIVERSE_ROLE, other, { from: luniverseAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : other });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : other });
         });
     
         it('non-Luniverse cannot luniverseApprove', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
     
             await expectRevert(
-                this.token.luniverseApprove(unpegTxnHash, { from : other }),
+                this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : other }),
                 'Unpeggable: caller does not have the Luniverse role'
             );
         });
@@ -282,7 +282,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
     
             await expectRevert(
-                this.token.luniverseApprove(unpegTxnHash, { from : gluwaAdmin }),
+                this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin }),
                 'Unpeggable: caller does not have the Luniverse role'
             );
         });
@@ -296,8 +296,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -310,8 +310,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -324,8 +324,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -338,7 +338,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -352,7 +352,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -366,8 +366,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -385,8 +385,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.baseToken.mint(this.token.address, unpegAmount, { from : deployer });
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -408,8 +408,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
 
         it('Gluwa can processUnpeg', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -424,8 +424,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
         it('Luniverse cannot processUnpeg', async function () {
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -440,8 +440,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
         it('non-Gluwa cannot processUnpeg', async function () {            
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -456,7 +456,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
         it('Gluwa cannot processUnpeg when not Gluwa approved', async function () {
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -471,7 +471,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
         it('Gluwa cannot processUnpeg when not Luniverse approved', async function () {
     
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -486,8 +486,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
         it('Gluwa cannot processUnpeg when already processed', async function () {
 
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
@@ -509,7 +509,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
     
             await expectRevert(
                 this.token.processUnpeg(unpegTxnHash, other, fee, signature, { from : gluwaAdmin }),
-                "Unpeggable: the txnHash is not Gluwa Approved"
+                "Unpeggable: the txnHash is not unpegged"
             );
         });
 
@@ -526,8 +526,8 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
 
         it('cannot processUnpeg with invalid signature', async function () {
             await this.token.unpeg(unpegTxnHash, unpegAmount, other, { from : gluwaAdmin });
-            await this.token.gluwaApprove(unpegTxnHash, { from : gluwaAdmin });
-            await this.token.luniverseApprove(unpegTxnHash, { from : luniverseAdmin });
+            await this.token.methods['gluwaApprove(bytes32)'](unpegTxnHash, { from : gluwaAdmin });
+            await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
             var dummy_fee = new BN('2');
