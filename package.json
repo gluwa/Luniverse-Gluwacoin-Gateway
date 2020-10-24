@@ -8,10 +8,12 @@
     "@openzeppelin/contracts-ethereum-package": "^3.0.0"
   },
   "devDependencies": {
-    "@openzeppelin/test-environment": "^0.1.5",
+    "@openzeppelin/test-environment": "^0.1.6",
     "@openzeppelin/test-helpers": "^0.5.7",
     "chai": "^4.2.0",
-    "mocha": "^8.2.0"
+    "ganache-cli": "^6.12.0",
+    "mocha": "^8.2.0",
+    "truffle": "^5.1.48"
   },
   "scripts": {
     "test": "oz compile && mocha --exit --recursive test --timeout 5000"
@@ -33,5 +35,8 @@
   "bugs": {
     "url": "https://github.com/gluwa/Luniverse-Gluwacoin-Gateway/issues"
   },
-  "homepage": "https://github.com/gluwa/Luniverse-Gluwacoin-Gateway#readme"
+  "homepage": "https://github.com/gluwa/Luniverse-Gluwacoin-Gateway#readme",
+  "directories": {
+    "test": "test"
+  }
 }

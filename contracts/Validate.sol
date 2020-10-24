@@ -14,6 +14,20 @@ library Validate {
     /**
      * @dev Throws if given `sig` is an incorrect signature of the `sender`.
      */
+    function validateApproveSignature(address contractAddress, address approver, bytes32 txnHash, bytes memory sig)
+    internal pure returns (bool) {
+        bytes32 hash = keccak256(abi.encodePacked(contractAddress, approver, txnHash));
+        bytes32 messageHash = hash.toEthSignedMessageHash();
+
+        address signer = messageHash.recover(sig);
+        require(signer == approver, "Validate: invalid signature");
+
+        return true;
+    }
+
+    /**
+     * @dev Throws if given `sig` is an incorrect signature of the `sender`.
+     */
     function validateSignature(address contractAddress, address sender, bytes32 txnHash, uint256 fee, bytes memory sig)
     internal pure returns (bool) {
         bytes32 hash = keccak256(abi.encodePacked(contractAddress, sender, txnHash, fee));
