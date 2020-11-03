@@ -11,13 +11,13 @@ import "./Validate.sol";
 
 /**
  * @dev 2-Way Peg Gluwacoin Gateway contract between the Ethereum network and the Luniverse.
- * Gluwa and Luniverse serves as gatekeepers of the gateway.
+ * Gluwa and Luniverse serve as gatekeepers of the gateway.
  * You can deposit to the contract's address to peg your Gluwacoin.
  * Once pegged, submit the deposit transactionHash and request gatekeepers to verify your peg.
  * Your Gluwacoins will get released on the Luniverse when both gatekeepers complete the verification.
  * You can also withdraw your Luniverse Gluwacoin from the contract.
  * Burn your Luniverse Gluwacoin and request gatekeepers to verify your burn by submitting its transactionHash.
- * Once both gatekeepers verifies the burn, your Gluwacoin will get released from the contract to your address.
+ * Once both gatekeepers verify the burn, your Gluwacoin will get released from the contract to your address.
  */
 contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessControlUpgradeSafe  {
     using Address for address;
@@ -94,6 +94,12 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         _unpegged[txnHash] = Unpeg(amount, sender, false, false, false);
     }
 
+    /**
+     * @dev Gluwa approves Unpeg with the {txnHash}.
+     * There must be an Unpeg object with the {txnHash}.
+     * The caller must have a Gluwa role.
+     * The Unpeg object must not be Gluwa approved already.
+    **/
     function gluwaApprove(bytes32 txnHash) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, msg.sender), "Unpeggable: caller does not have the Gluwa role");
@@ -102,6 +108,13 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         _unpegged[txnHash]._gluwaApproved = true;
     }
 
+    /**
+     * @dev Gluwa approves Unpeg with the {txnHash}, ETHlessly.
+     * The {sig} must be a correct signature of the {approver}.
+     * There must be an Unpeg object with the {txnHash}.
+     * The {approver} must have a Gluwa role.
+     * The Unpeg object must not be Gluwa approved already.
+    **/
     function gluwaApprove(bytes32 txnHash, address approver, bytes memory sig) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, approver), "Unpeggable: approver does not have the Gluwa role");
@@ -112,6 +125,12 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         _unpegged[txnHash]._gluwaApproved = true;
     }
 
+    /**
+     * @dev Luniverse approves Unpeg with the {txnHash}.
+     * There must be an Unpeg object with the {txnHash}.
+     * The caller must have a Luniverse role.
+     * The Unpeg object must not be Luniverse approved already.
+    **/
     function luniverseApprove(bytes32 txnHash) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(LUNIVERSE_ROLE, msg.sender), "Unpeggable: caller does not have the Luniverse role");
@@ -120,6 +139,13 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         _unpegged[txnHash]._luniverseApproved = true;
     }
 
+    /**
+     * @dev Luniverse approves Unpeg with the {txnHash}, ETHlessly.
+     * The {sig} must be a correct signature of the {approver}.
+     * There must be an Unpeg object with the {txnHash}.
+     * The {approver} must have a Luniverse role.
+     * The Unpeg object must not be Luniverse approved already.
+    **/
     function luniverseApprove(bytes32 txnHash, address approver, bytes memory sig) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(LUNIVERSE_ROLE, approver), "Unpeggable: approver does not have the Luniverse role");
