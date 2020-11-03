@@ -88,7 +88,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      */
     function unpeg(bytes32 txnHash, uint256 amount, address sender) public {
         require(!_isUnpegged(txnHash), "Unpeggable: the txnHash is already unpegged");
-        require(hasRole(GLUWA_ROLE, msg.sender) || hasRole(LUNIVERSE_ROLE, msg.sender),
+        require(hasRole(GLUWA_ROLE, _msgSender()) || hasRole(LUNIVERSE_ROLE, _msgSender()),
             "Unpeggable: caller does not have the Gluwa role or the Luniverse role");
 
         _unpegged[txnHash] = Unpeg(amount, sender, false, false, false);
@@ -102,7 +102,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     **/
     function gluwaApprove(bytes32 txnHash) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
-        require(hasRole(GLUWA_ROLE, msg.sender), "Unpeggable: caller does not have the Gluwa role");
+        require(hasRole(GLUWA_ROLE, _msgSender()), "Unpeggable: caller does not have the Gluwa role");
         require(!_unpegged[txnHash]._gluwaApproved, "Peggable: the txnHash is already Gluwa Approved");
 
         _unpegged[txnHash]._gluwaApproved = true;
@@ -133,7 +133,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     **/
     function luniverseApprove(bytes32 txnHash) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
-        require(hasRole(LUNIVERSE_ROLE, msg.sender), "Unpeggable: caller does not have the Luniverse role");
+        require(hasRole(LUNIVERSE_ROLE, _msgSender()), "Unpeggable: caller does not have the Luniverse role");
         require(!_unpegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
 
         _unpegged[txnHash]._luniverseApproved = true;
@@ -189,7 +189,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      */
     function processUnpeg(bytes32 txnHash, address sender, uint256 fee, bytes memory sig) public {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
-        require(hasRole(GLUWA_ROLE, msg.sender), "Unpeggable: caller does not have the Gluwa role");
+        require(hasRole(GLUWA_ROLE, _msgSender()), "Unpeggable: caller does not have the Gluwa role");
         require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
         require(_unpegged[txnHash]._luniverseApproved, "Unpeggable: the txnHash is not Luniverse Approved");
         require(!_unpegged[txnHash]._processed, "Unpeggable: the txnHash is already processed");
@@ -200,7 +200,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         Validate.validateSignature(address(this), sender, txnHash, fee, sig);
 
         _token.transfer(account, SafeMath.sub(amount, fee));
-        _token.transfer(msg.sender, fee);
+        _token.transfer(_msgSender(), fee);
 
         _unpegged[txnHash]._processed = true;
     }
