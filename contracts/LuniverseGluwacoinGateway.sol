@@ -214,11 +214,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * @dev Returns if there is Unpeg for the {txnHash}.
      */
     function _isUnpegged(bytes32 txnHash) private view returns (bool unpegged) {
-        if (_unpegged[txnHash]._sender != address(0)) {
-            return true;
-        }
-
-        return false;
+        return (_unpegged[txnHash]._sender != address(0));
     }
 
     uint256[50] private __gap;
