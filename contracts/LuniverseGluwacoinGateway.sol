@@ -4,6 +4,7 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
@@ -21,6 +22,7 @@ import "./Validate.sol";
  */
 contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessControlUpgradeSafe  {
     using Address for address;
+    using ECDSA for bytes32;
 
     // base token, the token to be pegged
     IERC20 private _token;
@@ -55,21 +57,21 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     /**
      * @dev Returns the address of the base token.
      */
-    function token() public view returns (IERC20) {
+    function token() external view returns (IERC20) {
         return _token;
     }
 
     /**
      * @dev Returns if there is Unpeg for the {txnHash}.
      */
-    function isUnpegged(bytes32 txnHash) public view returns (bool unpegged) {
+    function isUnpegged(bytes32 txnHash) external view returns (bool unpegged) {
         return _isUnpegged(txnHash);
     }
 
     /**
      * @dev Returns Unpeg for the {txnHash}.
      */
-    function getUnpeg(bytes32 txnHash) public view returns (uint256 amount, address sender, bool gluwaApproved,
+    function getUnpeg(bytes32 txnHash) external view returns (uint256 amount, address sender, bool gluwaApproved,
         bool luniverseApproved, bool processed) {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
 
@@ -86,7 +88,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * @dev Creates Unpeg for the {txnHash}. The creator must submit correct address of the {sender} and the {amount},
      * else gatekeepers will not approve the unpeg request.
      */
-    function unpeg(bytes32 txnHash, uint256 amount, address sender) public {
+    function unpeg(bytes32 txnHash, uint256 amount, address sender) external {
         require(!_isUnpegged(txnHash), "Unpeggable: the txnHash is already unpegged");
         require(hasRole(GLUWA_ROLE, _msgSender()) || hasRole(LUNIVERSE_ROLE, _msgSender()),
             "Unpeggable: caller does not have the Gluwa role or the Luniverse role");
@@ -100,7 +102,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * The caller must have a Gluwa role.
      * The Unpeg object must not be Gluwa approved already.
     **/
-    function gluwaApprove(bytes32 txnHash) public {
+    function gluwaApprove(bytes32 txnHash) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, _msgSender()), "Unpeggable: caller does not have the Gluwa role");
         require(!_unpegged[txnHash]._gluwaApproved, "Peggable: the txnHash is already Gluwa Approved");
@@ -115,12 +117,13 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * The {approver} must have a Gluwa role.
      * The Unpeg object must not be Gluwa approved already.
     **/
-    function gluwaApprove(bytes32 txnHash, address approver, bytes memory sig) public {
+    function gluwaApprove(bytes32 txnHash, address approver, bytes memory sig) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, approver), "Unpeggable: approver does not have the Gluwa role");
         require(!_unpegged[txnHash]._gluwaApproved, "Peggable: the txnHash is already Gluwa Approved");
 
-        Validate.validateApproveSignature(address(this), approver, txnHash, sig);
+        bytes32 hash = keccak256(abi.encodePacked(address(this), approver, txnHash));
+        Validate.validateSignature(hash, approver, sig);
 
         _unpegged[txnHash]._gluwaApproved = true;
     }
@@ -131,7 +134,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * The caller must have a Luniverse role.
      * The Unpeg object must not be Luniverse approved already.
     **/
-    function luniverseApprove(bytes32 txnHash) public {
+    function luniverseApprove(bytes32 txnHash) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(LUNIVERSE_ROLE, _msgSender()), "Unpeggable: caller does not have the Luniverse role");
         require(!_unpegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
@@ -146,12 +149,13 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * The {approver} must have a Luniverse role.
      * The Unpeg object must not be Luniverse approved already.
     **/
-    function luniverseApprove(bytes32 txnHash, address approver, bytes memory sig) public {
+    function luniverseApprove(bytes32 txnHash, address approver, bytes memory sig) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(LUNIVERSE_ROLE, approver), "Unpeggable: approver does not have the Luniverse role");
         require(!_unpegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
 
-        Validate.validateApproveSignature(address(this), approver, txnHash, sig);
+        bytes32 hash = keccak256(abi.encodePacked(address(this), approver, txnHash));
+        Validate.validateSignature(hash, approver, sig);
 
         _unpegged[txnHash]._luniverseApproved = true;
     }
@@ -164,7 +168,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * - the Unpeg must be Gluwa Approved and Luniverse Approved.
      * - the Unpeg must be not processed yet.
      */
-    function processUnpeg(bytes32 txnHash) public {
+    function processUnpeg(bytes32 txnHash) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
         require(_unpegged[txnHash]._luniverseApproved, "Unpeggable: the txnHash is not Luniverse Approved");
@@ -173,9 +177,9 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         address account = _unpegged[txnHash]._sender;
         uint256 amount = _unpegged[txnHash]._amount;
 
-        _token.transfer(account, amount);
-
         _unpegged[txnHash]._processed = true;
+
+        _token.transfer(account, amount);
     }
 
     /**
@@ -187,7 +191,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
      * - the Unpeg must be not processed yet.
      * - the caller must have the Gluwa role.
      */
-    function processUnpeg(bytes32 txnHash, address sender, uint256 fee, bytes memory sig) public {
+    function processUnpeg(bytes32 txnHash, address sender, uint256 fee, bytes memory sig) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, _msgSender()), "Unpeggable: caller does not have the Gluwa role");
         require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
@@ -197,23 +201,20 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         address account = _unpegged[txnHash]._sender;
         uint256 amount = _unpegged[txnHash]._amount;
 
-        Validate.validateSignature(address(this), sender, txnHash, fee, sig);
+        bytes32 hash = keccak256(abi.encodePacked(address(this), sender, txnHash, fee));
+        Validate.validateSignature(hash, sender, sig);
+
+        _unpegged[txnHash]._processed = true;
 
         _token.transfer(account, SafeMath.sub(amount, fee));
         _token.transfer(_msgSender(), fee);
-
-        _unpegged[txnHash]._processed = true;
     }
 
     /**
      * @dev Returns if there is Unpeg for the {txnHash}.
      */
     function _isUnpegged(bytes32 txnHash) private view returns (bool unpegged) {
-        if (_unpegged[txnHash]._sender != address(0)) {
-            return true;
-        }
-
-        return false;
+        return (_unpegged[txnHash]._sender != address(0));
     }
 
     uint256[50] private __gap;
