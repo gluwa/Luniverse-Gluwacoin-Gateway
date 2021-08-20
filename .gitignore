@@ -197,3 +197,4 @@ fabric.properties
 .openzeppelin/.session
 build/
 secrets.json
+secret

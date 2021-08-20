@@ -1,0 +1,178 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xc37fFfe96345a9d6BAE50dc2e6592A75F282cA6B",
+    "txHash": "0xc37d1f3b8d8edf6d7a12f7bdcbf392d6d3e3b2da4c56db7ea4d6c6c61f0aa109"
+  },
+  "proxies": [
+    {
+      "address": "0x114F8c1d9485D7f1D45d3f7804EA3D2F63f076ac",
+      "txHash": "0xbc9e8aaddf694e1137a7f95ccf86044a412911fe9665b4c31048c4d93149a7ee",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xcA15fF1cE07A69652A5f53B27079Fe06F5601fE0",
+      "txHash": "0xd574c06298a355cf765848ddaf12a1ab94f524f2cca3090d833b3c71f9fcf4b8",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "3e2b7421d8a54c0ac7785ec30eb35b34463e92ea826e38840c982bd047c72a6a": {
+      "address": "0xCc28e69482aAf1fA9851E9194443b4c87e18A231",
+      "txHash": "0x2c1d2c2e5a948ffc6f3300c7d87a827f5b9a4ccbde5e027a58779e189be5e5a4",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:26"
+          },
+          {
+            "contract": "Initializable",
+            "label": "______gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/Initializable.sol:61"
+          },
+          {
+            "contract": "ContextUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/GSN/Context.sol:37"
+          },
+          {
+            "contract": "AccessControlUpgradeSafe",
+            "label": "_roles",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)159_storage)",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.sol:58"
+          },
+          {
+            "contract": "AccessControlUpgradeSafe",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-ethereum-package/contracts/access/AccessControl.sol:210"
+          },
+          {
+            "contract": "LuniverseGluwacoinGateway",
+            "label": "_token",
+            "type": "t_contract(IERC20)1650",
+            "src": "../project:/contracts/LuniverseGluwacoinGateway.sol:28"
+          },
+          {
+            "contract": "LuniverseGluwacoinGateway",
+            "label": "_unpegged",
+            "type": "t_mapping(t_bytes32,t_struct(Unpeg)2275_storage)",
+            "src": "../project:/contracts/LuniverseGluwacoinGateway.sol:45"
+          },
+          {
+            "contract": "LuniverseGluwacoinGateway",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../project:/contracts/LuniverseGluwacoinGateway.sol:220"
+          }
+        ],
+        "types": {
+          "t_contract(IERC20)1650": {
+            "label": "contract IERC20"
+          },
+          "t_mapping(t_bytes32,t_struct(Unpeg)2275_storage)": {
+            "label": "mapping(bytes32 => struct LuniverseGluwacoinGateway.Unpeg)"
+          },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
+          "t_struct(Unpeg)2275_storage": {
+            "label": "struct LuniverseGluwacoinGateway.Unpeg",
+            "members": [
+              {
+                "label": "_amount",
+                "type": "t_uint256"
+              },
+              {
+                "label": "_sender",
+                "type": "t_address"
+              },
+              {
+                "label": "_gluwaApproved",
+                "type": "t_bool"
+              },
+              {
+                "label": "_luniverseApproved",
+                "type": "t_bool"
+              },
+              {
+                "label": "_processed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)159_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeSafe.RoleData)"
+          },
+          "t_struct(RoleData)159_storage": {
+            "label": "struct AccessControlUpgradeSafe.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_struct(AddressSet)1905_storage"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32"
+              }
+            ]
+          },
+          "t_struct(AddressSet)1905_storage": {
+            "label": "struct EnumerableSet.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)1725_storage"
+              }
+            ]
+          },
+          "t_struct(Set)1725_storage": {
+            "label": "struct EnumerableSet.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)"
+              }
+            ]
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          }
+        }
+      }
+    }
+  }
+}
