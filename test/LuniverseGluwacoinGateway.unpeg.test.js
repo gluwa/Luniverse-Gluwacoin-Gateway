@@ -385,7 +385,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
     
             await expectRevert(
                 this.token.methods['processUnpeg(bytes32)'](invalidUnpegTxnHash, { from : other }),
-                'invalid bytes32 value'
+                'invalid arrayify value'
             );
         });
     });
@@ -513,7 +513,7 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
 
             await expectRevert(
                 this.token.processUnpeg(invalidUnpegTxnHash, other, fee, signature, { from : gluwaAdmin }),
-                "invalid bytes32 value"
+                "invalid arrayify value"
             );
         });
 
