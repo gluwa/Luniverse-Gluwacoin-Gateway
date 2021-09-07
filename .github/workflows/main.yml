@@ -23,6 +23,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - shell: bash
+        env:
+          SUPER_SECRET: ${{ secrets.mnemonic }}
+        run: echo "$SUPER_SECRET" >> .secret
+
       - name: NPM install
         run: npm install
 
