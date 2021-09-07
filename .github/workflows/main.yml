@@ -26,7 +26,7 @@ jobs:
       - shell: bash
         env:
           SUPER_SECRET: ${{ secrets.mnemonic }}
-        run: echo "$SUPER_SECRET" >> .secret
+        run: echo "$SUPER_SECRET" >> ./secret
 
       - name: NPM install
         run: npm install
