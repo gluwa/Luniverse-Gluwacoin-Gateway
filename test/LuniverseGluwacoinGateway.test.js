@@ -490,11 +490,14 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             await this.token.methods['luniverseApprove(bytes32)'](unpegTxnHash, { from : luniverseAdmin });
     
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
-    
-            await expectRevert(
-                this.token.methods['processUnpeg(bytes32)'](invalidUnpegTxnHash, { from : other }),
-                'invalid bytes32 value'
-            );
+              
+            try {
+                await this.token.methods['processUnpeg(bytes32)'](invalidUnpegTxnHash, { from : other });
+                throw "error";
+            }
+            catch (error) {
+                expect(String(error)).to.contain("invalid arrayify value");
+            }
         });
     });
     
@@ -618,11 +621,14 @@ describe('LuniverseGluwacoinGateway_Unpeggable', function () {
             expect(await this.baseToken.balanceOf(other)).to.be.bignumber.equal('0');
     
             var signature = sign.sign(this.token.address, other, other_privateKey, invalidUnpegTxnHash, fee);
-
-            await expectRevert(
-                this.token.processUnpeg(invalidUnpegTxnHash, other, fee, signature, { from : gluwaAdmin }),
-                "invalid bytes32 value"
-            );
+           
+            try {
+                await this.token.processUnpeg(invalidUnpegTxnHash, other, fee, signature, { from : gluwaAdmin });
+                throw "error";
+            }
+            catch (error) {
+                expect(String(error)).to.contain("invalid arrayify value");
+            }
         });
 
         it('cannot processUnpeg with invalid signature', async function () {
