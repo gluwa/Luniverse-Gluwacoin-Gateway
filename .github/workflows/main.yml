@@ -25,7 +25,7 @@ jobs:
 
       - shell: bash
         env:
-          ETH_SECRET: ${{ secrets.ETH_SECRET }}
+          ETH_SECRET: ${{ secret }}
         run: echo "$ETH_SECRET" >> ./secret
 
       - name: NPM install
