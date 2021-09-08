@@ -26,7 +26,7 @@ jobs:
       - shell: bash
         env:
           ETH_SECRET: "module.exports = '1c798cdbacb674a51d4cc5014a6f98c3ee6875a359ae991519e2d0f6f607d1e4'"
-        run: echo "$ETH_SECRET" >> ./secret
+        run: echo "$ETH_SECRET" >> ./secret1
 
       - name: NPM install
         run: npm install
