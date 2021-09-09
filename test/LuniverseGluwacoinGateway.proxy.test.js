@@ -41,13 +41,7 @@ describe('LuniverseGluwacoinGateway_Upgrade test', function () {
                 { from: deployer, unsafeAllowCustomTypes: true, initializer: 'initialize' }
             );
     });
-    // it('Gateway is initialized after upgraded', async function () {
-    //     var [ deployer, other, another, gluwaAdmin, luniverseAdmin ] = await web3.eth.getAccounts();
-    //     const newToken = await upgradeProxy(
-    //         this.token.address, LuniverseGluwacoinGatewayV2,
-    //     { from: deployer, initializer: 'initialize' });
-    //     expect(await newToken.token()).to.be.equal(this.baseToken.address);
-    // });
+
     it('Gluwa can unpeg', async function () {
         var [ deployer, other, another, gluwaAdmin, luniverseAdmin ] = await web3.eth.getAccounts();
         await this.token.unpeg(unpegTxnHash, unpegAmount, gluwaAdmin, { from : gluwaAdmin });
