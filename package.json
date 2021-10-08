@@ -5,7 +5,10 @@
   "main": "index.js",
   "dependencies": {
     "@openzeppelin/cli": "^2.8.2",
-    "@openzeppelin/contracts-ethereum-package": "^3.0.0"
+    "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+    "@openzeppelin/truffle-upgrades": "^1.9.1",
+    "@truffle/hdwallet-provider": "^1.5.0",
+    "web3": "^1.5.2"
   },
   "devDependencies": {
     "@openzeppelin/test-environment": "^0.1.6",
@@ -13,7 +16,8 @@
     "chai": "^4.2.0",
     "ganache-cli": "^6.12.0",
     "mocha": "^8.2.0",
-    "truffle": "^5.1.48"
+    "truffle": "^5.1.48",
+    "truffle-privatekey-provider": "^1.5.0"
   },
   "scripts": {
     "test": "oz compile && mocha --exit --recursive test --timeout 5000"
