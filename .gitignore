@@ -198,3 +198,4 @@ fabric.properties
 build/
 secrets.json
 secret
+infuraAPI
