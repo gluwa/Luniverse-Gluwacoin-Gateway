@@ -11,8 +11,8 @@ module.exports = async function (deployer, network) {
     switch (network) {
         case "rinkeby": {
             USDCG_TOKEN_ADDRESS = "0x0aD1439A0e0bFdcD49939f9722866651a4AA9B3C";
-            gluwaAddress = "0xd9d097435E7CF8e663CcB26daB9C31A7F2B64ab4";
-            luniverseAddress = "0xd9d097435E7CF8e663CcB26daB9C31A7F2B64ab4";
+            gluwaAddress = "0x928ef75709Ea7e8D112ed63B5c041Dd9493F8448";
+            luniverseAddress = "0x697c720a3de7b4308f79d648b352c07b6d6a0b5b";
             break;
         }
 
