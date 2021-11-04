@@ -69,11 +69,11 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
   
     /// @notice return an unpeg record
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record  
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record  
     /// @return amount: to be unpegged
     /// @return sender: the address to receive the unpgged token less fee (if applicable)
     /// @return gluwaApproved: indicate whether the unpeg record is approved by Gluwa
-    /// @return gluwaApproved: indicate whether the unpeg record is approved by Luniverse
+    /// @return luniverseApproved: indicate whether the unpeg record is approved by Luniverse
     /// @return processed: indicate whether the unpeg record is processed    
     function getUnpeg(bytes32 txnHash) external view returns (uint256 amount, address sender, bool gluwaApproved,
         bool luniverseApproved, bool processed) {
@@ -89,7 +89,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
 
     /// @notice create an unpeg record
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record  
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record  
     /// @param amount: to be unpegged
     /// @param sender: the address to receive the unpgged token less fee (if applicable)  
     function unpeg(bytes32 txnHash, uint256 amount, address sender) external {
@@ -101,7 +101,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
   
     /// @notice Gluwa approves an Unpeg record by its {txnHash}.
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record     
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record     
     /// @dev
     /// * There must be an Unpeg object with the {txnHash}.
     /// * The caller must have a Gluwa role.
@@ -115,9 +115,9 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
     
     /// @notice Gluwa authorize another submitter to approve an Unpeg record by its {txnHash} using signature.
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record     
-    /// @param approver an address having Gluwa role  
-    /// @param sign the signature signed by the approver's private key  
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record     
+    /// @param approver: an address having Gluwa role  
+    /// @param sig: the signature signed by the approver's private key  
     /// @dev
     /// * There must be an Unpeg object with the {txnHash}.
     /// * The caller must have a Gluwa role.
@@ -134,7 +134,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
 
     /// @notice Luniverse approves an Unpeg record by its {txnHash}.
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record     
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record     
     /// @dev
     /// * There must be an Unpeg object with the {txnHash}.
     /// * The caller must have a Luniverse role.
@@ -148,9 +148,9 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
 
     /// @notice Luniverse authorize another submitter to approve an Unpeg record by its {txnHash} using signature.
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record     
-    /// @param approver an address having Luniverse role  
-    /// @param sign the signature signed by the approver's private key  
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record     
+    /// @param approver: an address having Luniverse role  
+    /// @param sig: the signature signed by the approver's private key  
     /// @dev
     /// * There must be an Unpeg object with the {txnHash}.
     /// * The caller must have a Luniverse role.
@@ -167,7 +167,7 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
     }
   
     /// @notice Process Unpeg request and release the unpegged Gluwacoin to the (sender)).
-    /// @param txnHash a bytes32 string to be used as an identifier for each unpeg record   
+    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record   
     /// @dev
     /// * There must be an Unpeg object with the {txnHash}.
     /// * The Unpeg must be not processed yet.
