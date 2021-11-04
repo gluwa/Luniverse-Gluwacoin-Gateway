@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-ethereum-package/contracts/cryptography/ECDSA.so
 import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 
-import "./Validate.sol";
+import "../Validate.sol";
 
 /**
  * @dev 2-Way Peg Gluwacoin Gateway contract between the Ethereum network and the Luniverse.
@@ -20,10 +20,10 @@ import "./Validate.sol";
  * Burn your Luniverse Gluwacoin and request gatekeepers to verify your burn by submitting its transactionHash.
  * Once both gatekeepers verify the burn, your Gluwacoin will get released from the contract to your address.
  */
-contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, AccessControlUpgradeSafe  {
+contract LuniverseGluwacoinGatewayUpgraded is Initializable, ContextUpgradeSafe, AccessControlUpgradeSafe  {
     using Address for address;
     using ECDSA for bytes32;
-
+    string constant public NEW_VARIABLE="New Variable"; 
     // base token, the token to be pegged
     IERC20 private _token;
 
@@ -57,15 +57,8 @@ contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, Acces
     /**
      * @dev Returns the address of the base token.
      */
-    function token() external view returns (IERC20) {
-        return _token;
-    }
-
-    /**
-     * @dev Returns the address of the base token.
-     */
-    function version() external pure returns (string memory) {
-        return "V2";
+    function token() external view returns (string memory) {
+        return "token() is replaced";
     }
 
     /**
@@ -177,7 +170,6 @@ contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, Acces
      */
     function processUnpeg(bytes32 txnHash) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
-        require(_unpegged[txnHash]._sender == _msgSender(), "Unpeggable: unauthorized caller");
         require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
         require(_unpegged[txnHash]._luniverseApproved, "Unpeggable: the txnHash is not Luniverse Approved");
         require(!_unpegged[txnHash]._processed, "Unpeggable: the txnHash is already processed");
@@ -224,6 +216,8 @@ contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, Acces
     function _isUnpegged(bytes32 txnHash) private view returns (bool unpegged) {
         return (_unpegged[txnHash]._sender != address(0));
     }
-
+    function _newFunction()public view returns(string memory){
+        return "New Function";
+    }
     uint256[50] private __gap;
 }
