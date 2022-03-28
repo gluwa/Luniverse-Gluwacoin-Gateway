@@ -68,13 +68,15 @@ contract LuniverseGluwacoinGateway is Initializable, ContextUpgradeSafe, AccessC
         return _isUnpegged(txnHash);
     }
   
-    /// @notice return an unpeg record
-    /// @param txnHash: a bytes32 string to be used as an identifier for each unpeg record  
-    /// @return amount: to be unpegged
-    /// @return sender: the address to receive the unpgged token less fee (if applicable)
-    /// @return gluwaApproved: indicate whether the unpeg record is approved by Gluwa
-    /// @return luniverseApproved: indicate whether the unpeg record is approved by Luniverse
-    /// @return processed: indicate whether the unpeg record is processed    
+    /**
+    * @dev return an unpeg record
+    * param txnHash: a bytes32 string to be used as an identifier for each unpeg record  
+    * return amount: to be unpegged
+    * return sender: the address to receive the unpgged token less fee (if applicable)
+    * return gluwaApproved: indicate whether the unpeg record is approved by Gluwa
+    * return luniverseApproved: indicate whether the unpeg record is approved by Luniverse
+    * return processed: indicate whether the unpeg record is processed    
+    */
     function getUnpeg(bytes32 txnHash) external view returns (uint256 amount, address sender, bool gluwaApproved,
         bool luniverseApproved, bool processed) {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");

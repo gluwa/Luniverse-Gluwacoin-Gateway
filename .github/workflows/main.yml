@@ -1,0 +1,20 @@
+name: Run all tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Truffle
+        run: npm install truffle -g
+      - name: NPM Clean Install
+        run: npm ci
+      - name: Truffle Compile
+        run: truffle compile
+      - name: Truffle Test
+        run: truffle test
