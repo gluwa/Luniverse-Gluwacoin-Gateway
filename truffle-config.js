@@ -45,6 +45,10 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
+    goerli: {
+      provider: () => new PrivateKeyProvider(privKeygoerli, "https://goerli.infura.io/v3/" + INFURA_API_KEY),
+      network_id: '5',
+    },
     rinkeby: {
       provider: () => new PrivateKeyProvider(privKeyrinkeby, "https://rinkeby.infura.io/v3/" + INFURA_API_KEY),
       network_id: '4',

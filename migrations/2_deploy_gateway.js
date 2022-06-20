@@ -9,6 +9,13 @@ var skip = false;
 
 module.exports = async function (deployer, network) {
     switch (network) {
+        case "goerli": {
+            USDCG_TOKEN_ADDRESS = "0x0aD1439A0e0bFdcD49939f9722866651a4AA9B3C";
+            gluwaAddress = "0xd9d097435E7CF8e663CcB26daB9C31A7F2B64ab4";
+            luniverseAddress = "0xd9d097435E7CF8e663CcB26daB9C31A7F2B64ab4";
+            break;
+        }
+
         case "rinkeby": {
             USDCG_TOKEN_ADDRESS = "0x0aD1439A0e0bFdcD49939f9722866651a4AA9B3C";
             gluwaAddress = "0xd9d097435E7CF8e663CcB26daB9C31A7F2B64ab4";
