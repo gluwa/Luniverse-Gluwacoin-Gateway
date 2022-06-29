@@ -1,0 +1,38 @@
+[
+  {
+    "name": "LuniverseGluwacoinGateway",
+    "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "network": "hardhat",
+    "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "deploymentDate": "2022-06-21T18:23:00.227Z",
+    "blockHah": "0x15bd551da7cb1461649520f5e9d9e31947091a6137f8c646656fc63948cdf9b9",
+    "blockNumber": 3
+  },
+  {
+    "name": "ProxyAdmin",
+    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "network": "hardhat",
+    "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "deploymentDate": "2022-06-21T18:23:00.234Z",
+    "blockHah": "",
+    "blockNumber": 0
+  },
+  {
+    "name": "LuniverseGluwacoinGateway",
+    "address": "0x14C90e6e969e38a9d3396f1Adbc849aD13D1D10B",
+    "network": "goerli",
+    "deployer": "0x84eA16043bbFd8916Cb2c764CD858DB0C8b8a6F4",
+    "deploymentDate": "2022-06-21T18:24:21.763Z",
+    "blockHah": "0xca349b136ecd07c485493c3aaac46bc571ec8b52a4b246235c08826426336557",
+    "blockNumber": 7098606
+  },
+  {
+    "name": "ProxyAdmin",
+    "address": "0x89F148cC9eacd6D80211BB2fbd47bd3659AC89dF",
+    "network": "goerli",
+    "deployer": "0x84eA16043bbFd8916Cb2c764CD858DB0C8b8a6F4",
+    "deploymentDate": "2022-06-21T18:24:21.850Z",
+    "blockHah": "",
+    "blockNumber": 0
+  }
+]

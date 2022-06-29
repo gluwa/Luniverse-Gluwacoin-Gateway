@@ -1,3 +1,4 @@
+require('dotenv').config({path:__dirname+'/.env.development'});
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -45,6 +46,10 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
+    goerli: {
+      provider: () => new PrivateKeyProvider(process.env.PRIVATE_KEY_GOERLI, process.env.RPC_GOERLI),
+      network_id: '5',
+    },
     rinkeby: {
       provider: () => new PrivateKeyProvider(privKeyrinkeby, "https://rinkeby.infura.io/v3/" + INFURA_API_KEY),
       network_id: '4',

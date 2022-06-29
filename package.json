@@ -4,10 +4,16 @@
   "description": "Gluwacoin Gateway for the Luniverse",
   "main": "index.js",
   "dependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/cli": "^2.8.2",
     "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+    "@openzeppelin/hardhat-upgrades": "^1.19.0",
     "@openzeppelin/truffle-upgrades": "^1.9.1",
     "@truffle/hdwallet-provider": "^1.5.0",
+    "dotenv": "^16.0.1",
+    "hardhat": "^2.9.9",
+    "hardhat-awesome-cli": "^0.0.15",
     "web3": "^1.5.2"
   },
   "devDependencies": {

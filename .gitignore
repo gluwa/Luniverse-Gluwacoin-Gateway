@@ -199,3 +199,8 @@ build/
 secrets.json
 secret
 infuraAPI
+.env.development
+artifacts
+contractsFlatten
+cache
+.openzeppelin/unknown-*

@@ -124,7 +124,7 @@ contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, Acces
      * The {approver} must have a Gluwa role.
      * The Unpeg object must not be Gluwa approved already.
     **/
-    function gluwaApprove(bytes32 txnHash, address approver, bytes memory sig) external {
+    function gluwaApprove(bytes32 txnHash, address approver, bytes calldata sig) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, approver), "Unpeggable: approver does not have the Gluwa role");
         require(!_unpegged[txnHash]._gluwaApproved, "Peggable: the txnHash is already Gluwa Approved");
@@ -156,7 +156,7 @@ contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, Acces
      * The {approver} must have a Luniverse role.
      * The Unpeg object must not be Luniverse approved already.
     **/
-    function luniverseApprove(bytes32 txnHash, address approver, bytes memory sig) external {
+    function luniverseApprove(bytes32 txnHash, address approver, bytes calldata sig) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(LUNIVERSE_ROLE, approver), "Unpeggable: approver does not have the Luniverse role");
         require(!_unpegged[txnHash]._luniverseApproved, "Peggable: the txnHash is already Luniverse Approved");
@@ -199,7 +199,7 @@ contract LuniverseGluwacoinGatewayV2 is Initializable, ContextUpgradeSafe, Acces
      * - the Unpeg must be not processed yet.
      * - the caller must have the Gluwa role.
      */
-    function processUnpeg(bytes32 txnHash, address sender, uint256 fee, bytes memory sig) external {
+    function processUnpeg(bytes32 txnHash, address sender, uint256 fee, bytes calldata sig) external {
         require(_isUnpegged(txnHash), "Unpeggable: the txnHash is not unpegged");
         require(hasRole(GLUWA_ROLE, _msgSender()), "Unpeggable: caller does not have the Gluwa role");
         require(_unpegged[txnHash]._gluwaApproved, "Unpeggable: the txnHash is not Gluwa Approved");
