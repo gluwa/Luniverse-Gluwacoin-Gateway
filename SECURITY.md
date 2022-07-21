@@ -20,7 +20,3 @@ Examples for details to include:
   involved in the discovery, if any.
 - Whether the vulnerability has already been disclosed.
 - How long an embargo would be required to be safe.
-
-## Vulnerability Disclosure Program
-
-Our vulnerability disclosure program is hosted through Bugcrowd and is in a closed state, if you wish to be included in the program send an email with your username to security@gluwa.com requesting an invitation to the bounty program. 
