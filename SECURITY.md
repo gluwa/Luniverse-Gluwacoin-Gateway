@@ -2,9 +2,6 @@
 
 ## Reporting a vulnerability
 
-Please send a detailed mail to security@gluwa.com to
-request to be invited in the VDP program in Bugcrowd.
-
 It is recommended to send the report to
 security@gluwa.com (and obviously not to discuss the
 issue anywhere else). 
